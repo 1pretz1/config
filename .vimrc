@@ -21,6 +21,7 @@ Plug 'tpope/vim-surround'
 Plug 'tpope/vim-unimpaired'
 Plug 'vim-syntastic/syntastic'
 Plug 'ap/vim-buftabline'
+Plug 'yssl/QFEnter'
 
 call plug#end()
 
@@ -117,6 +118,14 @@ hi GitGutterAdd ctermfg=green
 hi GitGutterChange ctermfg=yellow
 hi GitGutterDelete ctermfg=1
 hi GitGutterChangeDelete ctermfg=yellow
+
+nnoremap <buffer> <CR> :call QfEnter()<CR>
+
+function! QfEnter()
+  let l:lnum = line('.')
+  wincmd p
+  exe 'cc' l:lnum
+endfunction
 
 " Show a larger number of matches in CtrlP
 let g:ctrlp_max_height = 30

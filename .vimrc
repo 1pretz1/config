@@ -241,6 +241,10 @@ nmap <silent> <Tab><Right> :wincmd l<CR>
 " make ctrl w do nothing in insert mode
 imap <silent> <C-w> <Nop>
 
-" resize windows
+" resize windows vertically
 nnoremap <silent> + :exe "vertical resize " . (winwidth(0) * 5/4)<CR>
 nnoremap <silent> - :exe "vertical resize " . (winwidth(0) * 4/5)<CR>
+
+" resize windows horizontally
+nnoremap <silent> <leader>= :exe "resize +10"<CR>
+nnoremap <silent> <leader>- :exe "resize -10"<CR>

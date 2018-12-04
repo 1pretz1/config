@@ -21,7 +21,6 @@ Plug 'tpope/vim-surround'
 Plug 'tpope/vim-unimpaired'
 Plug 'vim-syntastic/syntastic'
 Plug 'ap/vim-buftabline'
-Plug 'yssl/QFEnter'
 
 call plug#end()
 
@@ -39,6 +38,34 @@ if has("clipboard")
     set clipboard+=unnamedplus
   endif
 endif
+
+" highlight searched word, <C-l> to cancel
+fun! SearchHighlight()
+  silent! call matchdelete(b:ring)
+  let b:ring = matchadd('ErrorMsg', '\c\%#' . @/, 101)
+endfun
+
+fun! SearchNext()
+  try
+    execute 'normal! ' . 'Nn'[v:searchforward]
+  catch /E385:/
+    echohl ErrorMsg | echo "E385: search hit BOTTOM without match for: " . @/ | echohl None
+  endtry
+  call SearchHighlight()
+endfun
+
+fun! SearchPrev()
+  try
+    execute 'normal! ' . 'nN'[v:searchforward]
+  catch /E384:/
+    echohl ErrorMsg | echo "E384: search hit TOP without match for: " . @/ | echohl None
+  endtry
+  call SearchHighlight()
+endfun
+
+nnoremap <silent> <C-L> :silent! call matchdelete(b:ring)<CR>:nohlsearch<CR>:set nolist nospell<CR><C-L>
+nnoremap <silent> n :call SearchNext()<CR>
+nnoremap <silent> N :call SearchPrev()<CR>
 
 " stty -ixon
 set colorcolumn=81                " Draw a vertical bar after 80 characters
@@ -119,13 +146,9 @@ hi GitGutterChange ctermfg=yellow
 hi GitGutterDelete ctermfg=1
 hi GitGutterChangeDelete ctermfg=yellow
 
-nnoremap <buffer> <CR> :call QfEnter()<CR>
-
-function! QfEnter()
-  let l:lnum = line('.')
-  wincmd p
-  exe 'cc' l:lnum
-endfunction
+" Always open file from quickfix window in previously focused window on enter,
+" also close qf and remove highlighting after search
+autocmd FileType qf nnoremap <cr> :exe 'wincmd p \| '.line('.').'cc'<bar>:cclose<bar>:noh<cr>
 
 " Show a larger number of matches in CtrlP
 let g:ctrlp_max_height = 30
@@ -148,9 +171,6 @@ let g:syntastic_always_populate_loc_list = 1
 " Don't syntax check when closing a file
 let g:syntastic_check_on_wq = 0
 
-" Enable syntastic rust support
-let g:syntastic_rust_checkers = ['cargo']
-
 " Set racer executable path for code completion
 let g:racer_cmd = "/usr/local/bin/racer"
 
@@ -159,6 +179,7 @@ let g:racer_experimental_completer = 1
 
 let g:vroom_use_dispatch = 1
 
+" copy ctrl-p split mappings to ack
 let g:ack_mappings = {
               \  '<C-v>':  '<C-W><CR><C-W>L<C-W>p<C-W>J<C-W>p',
               \  '<C-x>': '<C-W><CR><C-W>K' }
@@ -179,37 +200,19 @@ nmap <leader>N :NERDTreeFind<cr>
 nmap <leader>f :set hlsearch<cr>:Ack!<space>
 
 " Search for word under cursor
-nnoremap <leader>a :Ack! <C-r><C-w><CR>
+noremap <Leader>a :<C-u>let cmd = "Ack! <C-r><C-w>"<bar>call histadd("cmd", cmd)<bar>execute cmd<CR>
 
-" Search for class under cursor
-nnoremap <leader>c :Ack! -w 'class <C-r><C-w>'<CR>
-
-" Search for module under cursor
-nnoremap <leader>m :Ack! -w 'module <C-r><C-w>'<CR>
+" Search for class/module under cursor
+nnoremap <leader>c :<C-u>let cmd = "Ack! -w 'class <C-r><C-w>\\\|module <C-r><C-w>'"<bar>call histadd("cmd", cmd)<bar>execute cmd<CR>
 
 " Search for method under cursor
-nnoremap <leader>d :Ack! -w 'def <C-r><C-w>'<CR>
+nnoremap <leader>d :<C-u>let cmd = "Ack! -w 'def <C-r><C-w>\\\|def self\.<C-r><C-w>'"<bar>call histadd("cmd", cmd)<bar>execute cmd<CR>
 
 " Bind foreground execution to leader-x
 nmap <leader>x :Dispatch<space>
 
 " Bind background execution to leader-X
 nmap <leader>X :Dispatch!<space>
-
-" Bind 'zero-in' on a command to leader-z
-nmap <leader>z :Focus<space>
-
-" Bind 'zero-out' of a command to leader-Z
-nmap <leader>Z :Focus!<space>
-
-" Bind vim-dispatch quickfix output to leader-Q
-nmap <leader>Q :Copen<cr>
-
-" Bind starting an interactive command to leader-s
-" nmap <leader>s :Start<space>
-
-" Bind starting an interactive command (new tab) to leader-S
-nmap <leader>S :Start!<space>
 
 " Disable ex mode
 map Q <Nop>
@@ -246,5 +249,5 @@ nnoremap <silent> + :exe "vertical resize " . (winwidth(0) * 5/4)<CR>
 nnoremap <silent> - :exe "vertical resize " . (winwidth(0) * 4/5)<CR>
 
 " resize windows horizontally
-nnoremap <silent> <leader>= :exe "resize +10"<CR>
-nnoremap <silent> <leader>- :exe "resize -10"<CR>
+nnoremap <silent> <leader>= :exe "resize +5"<CR>
+nnoremap <silent> <leader>- :exe "resize -5"<CR>

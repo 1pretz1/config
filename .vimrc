@@ -2,25 +2,20 @@
 call plug#begin('~/.vim/plugged')
 
 Plug 'airblade/vim-gitgutter'
-Plug 'darfink/vim-plist'
 Plug 'kien/ctrlp.vim'
 Plug 'mileszs/ack.vim'
-Plug 'milkypostman/vim-togglelist'
 Plug 'nanotech/jellybeans.vim'
-Plug 'racer-rust/vim-racer'
 Plug 'rodjek/vim-puppet'
 Plug 'scrooloose/nerdtree'
-Plug 'sentient-lang/vim-sentient'
 Plug 'skalnik/vim-vroom'
 Plug 'tommcdo/vim-exchange'
-Plug 'tpope/vim-dispatch'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-sensible'
 Plug 'tpope/vim-surround'
-Plug 'tpope/vim-unimpaired'
 Plug 'vim-syntastic/syntastic'
 Plug 'ap/vim-buftabline'
+Plug 'skywind3000/asyncrun.vim'
 
 call plug#end()
 
@@ -39,36 +34,6 @@ if has("clipboard")
   endif
 endif
 
-" highlight searched word, <C-l> to cancel
-fun! SearchHighlight()
-  silent! call matchdelete(b:ring)
-  let b:ring = matchadd('ErrorMsg', '\c\%#' . @/, 101)
-endfun
-
-fun! SearchNext()
-  try
-    execute 'normal! ' . 'Nn'[v:searchforward]
-  catch /E385:/
-    echohl ErrorMsg | echo "E385: search hit BOTTOM without match for: " . @/ | echohl None
-  endtry
-  call SearchHighlight()
-endfun
-
-fun! SearchPrev()
-  try
-    execute 'normal! ' . 'nN'[v:searchforward]
-  catch /E384:/
-    echohl ErrorMsg | echo "E384: search hit TOP without match for: " . @/ | echohl None
-  endtry
-  call SearchHighlight()
-endfun
-
-nnoremap <silent> <C-L> :silent! call matchdelete(b:ring)<CR>:nohlsearch<CR>:set nolist nospell<CR><C-L>
-nnoremap <silent> n :call SearchNext()<CR>
-nnoremap <silent> N :call SearchPrev()<CR>
-"
-
-" stty -ixon
 set colorcolumn=81                " Draw a vertical bar after 80 characters
 set encoding=utf-8                " Use UTF-8 by default
 set expandtab                     " Use spaces instead of tabs
@@ -151,6 +116,9 @@ hi GitGutterChangeDelete ctermfg=yellow
 " also close qf and remove highlighting after search
 autocmd FileType qf nnoremap <cr> :exe 'wincmd p \| '.line('.').'cc'<bar>:cclose<bar>:noh<cr>
 
+" open asyncrun operation in quickfix as processing
+let g:asyncrun_open = 8
+
 " Show a larger number of matches in CtrlP
 let g:ctrlp_max_height = 30
 
@@ -185,6 +153,9 @@ let g:ack_mappings = {
               \  '<C-v>':  '<C-W><CR><C-W>L<C-W>p<C-W>J<C-W>p',
               \  '<C-x>': '<C-W><CR><C-W>K' }
 
+" run rspec on opened file
+noremap <leader>w :AsyncRun rspec %<cr>
+
 " Bind <C-j> to move down the completion list
 inoremap <expr> <C-j> pumvisible() ? "\<C-n>" : "\<C-j>"
 
@@ -214,21 +185,6 @@ nmap <leader>x :Dispatch<space>
 
 " Bind background execution to leader-X
 nmap <leader>X :Dispatch!<space>
-
-" Bind 'zero-in' on a command to leader-z
-nmap <leader>z :Focus<space>
-
-" Bind 'zero-out' of a command to leader-Z
-nmap <leader>Z :Focus!<space>
-
-" Bind vim-dispatch quickfix output to leader-Q
-nmap <leader>Q :Copen<cr>
-
-" Bind starting an interactive command to leader-s
-nmap <leader>s :Start<space>
-
-" Bind starting an interactive command (new tab) to leader-S
-nmap <leader>S :Start!<space>
 
 " Disable ex mode
 map Q <Nop>
@@ -261,9 +217,9 @@ nmap <silent> <Tab><Right> :wincmd l<CR>
 imap <silent> <C-w> <Nop>
 
 " resize windows vertically
-nnoremap <silent> + :exe "vertical resize " . (winwidth(0) * 5/4)<CR>
-nnoremap <silent> - :exe "vertical resize " . (winwidth(0) * 4/5)<CR>
+nnoremap <silent> + :exe "vertical resize +5"<CR>
+nnoremap <silent> _ :exe "vertical resize -5"<CR>
 
 " resize windows horizontally
-nnoremap <silent> <leader>= :exe "resize +5"<CR>
-nnoremap <silent> <leader>- :exe "resize -5"<CR>
+nnoremap <silent> \| :exe "resize +5"<CR>
+nnoremap <silent> " :exe "resize -5"<CR>

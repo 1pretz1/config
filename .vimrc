@@ -227,13 +227,13 @@ vmap <leader>y "*y
 nmap <leader>p "*p
 
 " Move to the previous buffer with "."
-nmap \ :bn<CR>
+nmap <silent> \ :bn<CR>
 
 " Move to the next buffer with ","
-nmap ; :bp<CR>
+nmap <silent> ; :bp<CR>
 
-" Delete buffer but keep pane with "\;"
-nmap \; :bp<bar>sp<bar>bn<bar>bd<CR>
+" Delete buffer and switch to previous window
+nnoremap <silent> \; :lclose<bar>b#<bar>bd #<CR>
 
 " Switching buffers
 nmap <silent> <Tab><Up> :wincmd k<CR>

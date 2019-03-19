@@ -15,7 +15,7 @@ Plug 'tpope/vim-sensible'
 Plug 'tpope/vim-surround'
 Plug 'vim-syntastic/syntastic'
 Plug 'ap/vim-buftabline'
-Plug 'skywind3000/asyncrun.vim'
+Plug 'timakro/vim-searchant'
 
 call plug#end()
 
@@ -33,34 +33,6 @@ if has("clipboard")
     set clipboard+=unnamedplus
   endif
 endif
-
-" highlight searched word, <C-l> to cancel
-fun! SearchHighlight()
-  silent! call matchdelete(b:ring)
-  let b:ring = matchadd('ErrorMsg', '\c\%#' . @/, 101)
-endfun
-
-fun! SearchNext()
-  try
-    execute 'normal! ' . 'Nn'[v:searchforward]
-  catch /E385:/
-    echohl ErrorMsg | echo "E385: search hit BOTTOM without match for: " . @/ | echohl None
-  endtry
-  call SearchHighlight()
-endfun
-
-fun! SearchPrev()
-  try
-    execute 'normal! ' . 'nN'[v:searchforward]
-  catch /E384:/
-    echohl ErrorMsg | echo "E384: search hit TOP without match for: " . @/ | echohl None
-  endtry
-  call SearchHighlight()
-endfun
-
-nnoremap <silent> <C-L> :silent! call matchdelete(b:ring)<CR>:nohlsearch<CR>:set nolist nospell<CR><C-L>
-nnoremap <silent> n :call SearchNext()<CR>
-nnoremap <silent> N :call SearchPrev()<CR>
 
 set colorcolumn=81                " Draw a vertical bar after 80 characters
 set encoding=utf-8                " Use UTF-8 by default
@@ -110,16 +82,16 @@ au FileType qf setlocal colorcolumn=
 
 " Remember last location in a file, unless it's a git commit message
 au BufReadPost * if &filetype !~ '^git\c' && line("'\"") > 0 && line("'\"") <= line("$")
-  \| exe "normal! g`\"" | endif
+\| exe "normal! g`\"" | endif
 
 " Strip trailing whitespace on write
 function! <SID>StripTrailingWhitespace()
-    let _s=@/
-    let l = line(".")
-    let c = col(".")
-    %s/\s\+$//e
-    let @/=_s
-    call cursor(l, c)
+  let _s=@/
+  let l = line(".")
+  let c = col(".")
+  %s/\s\+$//e
+  let @/=_s
+  call cursor(l, c)
 endfunction
 autocmd BufWritePre * :call <SID>StripTrailingWhitespace()
 
@@ -178,8 +150,8 @@ let g:vroom_use_dispatch = 1
 
 " copy ctrl-p split mappings to ack
 let g:ack_mappings = {
-              \  '<C-v>':  '<C-W><CR><C-W>L<C-W>p<C-W>J<C-W>p',
-              \  '<C-x>': '<C-W><CR><C-W>K' }
+            \  '<C-v>':  '<C-W><CR><C-W>L<C-W>p<C-W>J<C-W>p',
+            \  '<C-x>': '<C-W><CR><C-W>K' }
 
 " run rspec on opened file
 noremap <leader>w :AsyncRun rspec %<cr>
@@ -225,6 +197,10 @@ vmap <leader>y "*y
 
 " Paste from temp file
 nmap <leader>p "*p
+
+" Dont add {} motion to jumplist
+nnoremap <silent> } :<C-u>execute "keepjumps norm! " . v:count1 . "}"<CR>
+nnoremap <silent> { :<C-u>execute "keepjumps norm! " . v:count1 . "{"<CR>
 
 " Move to the previous buffer with "."
 nmap <silent> \ :bn<CR>

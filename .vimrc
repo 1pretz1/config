@@ -2,27 +2,26 @@
 call plug#begin('~/.vim/plugged')
 
 Plug 'airblade/vim-gitgutter'
-Plug 'kien/ctrlp.vim'
 Plug 'mileszs/ack.vim'
 Plug 'nanotech/jellybeans.vim'
 Plug 'rodjek/vim-puppet'
 Plug 'scrooloose/nerdtree'
 Plug 'skalnik/vim-vroom'
-Plug 'tommcdo/vim-exchange'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-sensible'
-Plug 'tpope/vim-surround'
 Plug 'vim-syntastic/syntastic'
 Plug 'ap/vim-buftabline'
 Plug 'timakro/vim-searchant'
 Plug 'tpope/vim-dispatch'
-Plug 'd11wtq/ctrlp_bdelete.vim'
+Plug '/usr/local/opt/fzf'
+Plug 'junegunn/fzf.vim'
+Plug 'pangloss/vim-javascript'
 
 call plug#end()
 
-" Make ctrl-2 available to delete buffers from ctrl-p
-call ctrlp_bdelete#init()
+" Plug 'tpope/vim-surround'
+" Plug 'tommcdo/vim-exchange'
 
 " Load these plugins before the rest of .vimrc
 runtime! plugin/sensible.vim
@@ -38,6 +37,9 @@ if has("clipboard")
     set clipboard+=unnamedplus
   endif
 endif
+
+" Store FZF history
+let g:fzf_history_dir = '~/.local/share/fzf-history'
 
 set colorcolumn=81                " Draw a vertical bar after 80 characters
 set encoding=utf-8                " Use UTF-8 by default
@@ -121,14 +123,15 @@ hi GitGutterChangeDelete ctermfg=yellow
 " also close qf and remove highlighting after search
 autocmd FileType qf nnoremap <cr> :exe 'wincmd p \| '.line('.').'cc'<bar>:cclose<bar>:noh<cr>
 
+" Prevent random syntax highlighting from being removed by reloading it on
+" every action
+autocmd Syntax * :syntax sync fromstart
+
+filetype plugin on
+set omnifunc=syntaxcomplete#Complete
+
 " open asyncrun operation in quickfix as processing
 let g:asyncrun_open = 8
-
-" Show a larger number of matches in CtrlP
-let g:ctrlp_max_height = 30
-
-" Use git to speed up CtrlP file searches
-let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
 
 " Use git to speed up global search
 let g:ackprg = 'git grep -H --line-number --no-color'
@@ -153,10 +156,9 @@ let g:racer_experimental_completer = 1
 
 let g:vroom_use_dispatch = 1
 
-" copy ctrl-p split mappings to ack
-let g:ack_mappings = {
-            \  '<C-v>':  '<C-W><CR><C-W>L<C-W>p<C-W>J<C-W>p',
-            \  '<C-x>': '<C-W><CR><C-W>K' }
+" Capital :W and :Q map to save and quit respectively
+:command W w
+:command Q q
 
 " Bind <C-j> to move down the completion list
 inoremap <expr> <C-j> pumvisible() ? "\<C-n>" : "\<C-j>"
@@ -188,8 +190,11 @@ nmap <leader>x :Dispatch<space>
 " Bind background execution to leader-X
 nmap <leader>X :Dispatch!<space>
 
+" FZF search
+nnoremap <C-p> :FZF<cr>
+
 " Open ctrl-p in buffer mode
-nmap <C-b> :CtrlPBuffer<cr>
+nmap <C-b> :Buffer<cr>
 
 " Disable ex mode
 map Q <Nop>
@@ -226,8 +231,8 @@ nmap <silent> <Tab><Right> :wincmd l<CR>
 imap <silent> <C-w> <Nop>
 
 " resize windows vertically
-nnoremap <silent> + :exe "vertical resize +5"<CR>
-nnoremap <silent> _ :exe "vertical resize -5"<CR>
+nnoremap <silent> + :exe "vertical resize +10"<CR>
+nnoremap <silent> _ :exe "vertical resize -10"<CR>
 
 " resize windows horizontally
 "nnoremap <silent> \| :exe "resize +5"<CR>

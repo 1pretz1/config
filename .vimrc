@@ -16,7 +16,6 @@ Plug 'timakro/vim-searchant'
 Plug 'tpope/vim-dispatch'
 Plug '/usr/local/opt/fzf'
 Plug 'junegunn/fzf.vim'
-Plug 'pangloss/vim-javascript'
 
 call plug#end()
 
@@ -40,6 +39,11 @@ endif
 
 " Store FZF history
 let g:fzf_history_dir = '~/.local/share/fzf-history'
+
+" Don't open nerdtree on opening vim
+let g:NERDTreeHijackNetrw=0
+" Don't open default file tree on opening vim
+let loaded_netrw = 0
 
 set colorcolumn=81                " Draw a vertical bar after 80 characters
 set encoding=utf-8                " Use UTF-8 by default
@@ -127,14 +131,18 @@ autocmd FileType qf nnoremap <cr> :exe 'wincmd p \| '.line('.').'cc'<bar>:cclose
 " every action
 autocmd Syntax * :syntax sync fromstart
 
-filetype plugin on
-set omnifunc=syntaxcomplete#Complete
+"filetype plugin on
+"set omnifunc=syntaxcomplete#Complete
 
 " open asyncrun operation in quickfix as processing
-let g:asyncrun_open = 8
+"let g:asyncrun_open = 8
 
-" Use git to speed up global search
-let g:ackprg = 'git grep -H --line-number --no-color'
+" Use git to speed up global search if ag isnt available
+if executable('ag')
+  let g:ackprg = 'ag --nogroup --nocolor --column'
+else
+  let g:ackprg = 'git grep -H --line-number --no-color'
+endif
 
 " Highlight matches after a global search
 let g:ackhighlight = 1

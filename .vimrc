@@ -16,11 +16,10 @@ Plug 'timakro/vim-searchant'
 Plug 'tpope/vim-dispatch'
 Plug '/usr/local/opt/fzf'
 Plug 'junegunn/fzf.vim'
+Plug 'tpope/vim-surround'
+Plug 'arithran/vim-delete-hidden-buffers'
 
 call plug#end()
-
-" Plug 'tpope/vim-surround'
-" Plug 'tommcdo/vim-exchange'
 
 " Load these plugins before the rest of .vimrc
 runtime! plugin/sensible.vim
@@ -165,8 +164,8 @@ let g:racer_experimental_completer = 1
 let g:vroom_use_dispatch = 1
 
 " Capital :W and :Q map to save and quit respectively
-:command W w
-:command Q q
+:command! W w
+:command! Q q
 
 " Bind <C-j> to move down the completion list
 inoremap <expr> <C-j> pumvisible() ? "\<C-n>" : "\<C-j>"

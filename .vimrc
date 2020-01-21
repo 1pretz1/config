@@ -18,6 +18,7 @@ Plug '/usr/local/opt/fzf'
 Plug 'junegunn/fzf.vim'
 Plug 'tpope/vim-surround'
 Plug 'arithran/vim-delete-hidden-buffers'
+Plug 'vim/killersheep'
 
 call plug#end()
 
@@ -178,10 +179,11 @@ noremap <Leader>a :<C-u>let cmd = "Ack! <C-r><C-w>"<bar>call histadd("cmd", cmd)
 nnoremap <leader>c :<C-u>let cmd = "Ack! -w 'class <C-r><C-w>\\\|module <C-r><C-w>'"<bar>call histadd("cmd", cmd)<bar>execute cmd<CR>
 
 " Search for method under cursor
-nnoremap <leader>m :<C-u>let cmd = "Ack! -w 'def <C-r><C-w>\\\|def self\.<C-r><C-w>'"<bar>call histadd("cmd", cmd)<bar>execute cmd<CR>
+nnoremap <leader>d :<C-u>let cmd = "Ack! -w 'def <C-r><C-w>\\\|def self\.<C-r><C-w>'"<bar>call histadd("cmd", cmd)<bar>execute cmd<CR>
 
-nnoremap <leader>d irequire 'byebug'; byebug<ESC>
-nnoremap <leader>D i<% require 'byebug'; byebug %><ESC>
+nnoremap <Leader>gd :Gdiff<cr>
+
+nnoremap <Leader>o :copen<cr>
 
 " Bind foreground execution to leader-x
 nmap <leader>x :Dispatch<space>

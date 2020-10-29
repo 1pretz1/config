@@ -18,7 +18,7 @@ Plug '/usr/local/opt/fzf'
 Plug 'junegunn/fzf.vim'
 Plug 'tpope/vim-surround'
 Plug 'arithran/vim-delete-hidden-buffers'
-Plug 'vim/killersheep'
+Plug 'tomtom/tcomment_vim'
 
 call plug#end()
 
@@ -122,16 +122,18 @@ hi GitGutterChangeDelete ctermfg=yellow
 " also close qf and remove highlighting after search
 autocmd FileType qf nnoremap <cr> :exe 'wincmd p \| '.line('.').'cc'<bar>:cclose<bar>:noh<cr>
 
+" import
 " Prevent random syntax highlighting from being removed by reloading it on
 " every action
 autocmd Syntax * :syntax sync fromstart
 
 " Use git to speed up global search if ag isnt available
-"if executable('ag')
-"  let g:ackprg = 'ag --nogroup --nocolor --column'
-"else
-let g:ackprg = 'git grep -H --line-number --no-color'
-"endif
+if executable('ag')
+  let g:ackprg = 'ag --nogroup --nocolor --column'
+else
+  let g:ackprg = 'git grep -H --line-number --no-color'
+endif
+
 "
 " Highlight matches after a global search
 let g:ackhighlight = 1
@@ -172,14 +174,21 @@ nmap <leader>N :NERDTreeFind<cr>
 " Bind global search to leader-f
 nmap <leader>f :set hlsearch<cr>:Ack!<space>
 
+nmap <leader>b :ID<cr>
+:command ID :normal i import remote_pdb; remote_pdb.set_trace(host='0.0.0.0', port=3000)<ESC>
+
+" Ag search
+command! -nargs=+ -complete=file Ag call fzf#vim#ag_raw(<q-args>)
+"command! -bang -nargs=* Ag call fzf#vim#ag_raw(<q-args>, '--color-path "1;36"', <bang>0)
+
 " Search for word under cursor
 noremap <Leader>a :<C-u>let cmd = "Ack! <C-r><C-w>"<bar>call histadd("cmd", cmd)<bar>execute cmd<CR>
 
-" Search for class/module under cursor
-nnoremap <leader>c :<C-u>let cmd = "Ack! -w 'class <C-r><C-w>\\\|module <C-r><C-w>'"<bar>call histadd("cmd", cmd)<bar>execute cmd<CR>
-
 " Search for method under cursor
-nnoremap <leader>d :<C-u>let cmd = "Ack! -w 'def <C-r><C-w>\\\|def self\.<C-r><C-w>'"<bar>call histadd("cmd", cmd)<bar>execute cmd<CR>
+nnoremap <leader>d :<C-u>let cmd = "Ack! -w 'def <C-r><C-w>\|def self\.<C-r><C-w>'"<bar>call histadd("cmd", cmd)<bar>execute cmd<CR>
+
+" Search for class/module under cursor
+nnoremap <leader>c :<C-u>let cmd = "Ack! -w 'class <C-r><C-w>\|module <C-r><C-w>'"<bar>call histadd("cmd", cmd)<bar>execute cmd<CR>
 
 nnoremap <Leader>gd :Gdiff<cr>
 

@@ -1,14 +1,37 @@
 #export PATH="$HOME/.rbenv/bin:$PATH"
 eval "$(rbenv init -)"
 
-# boot vm
-alias start="cd && cd /Users/peterhartshorn/govuk/govuk-puppet/development-vm && vagrant up"
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
 # ssh into dev vm and start a tmux session
 alias dev="ssh dev -t 'tmux -CC'"
 
 # print current branch
-alias cb="git rev-parse --abbrev-ref HEAD"
+function cb() {
+  command git rev-parse --abbrev-ref HEAD
+}
+
+# push current upstream branch
+function gpu() {
+ command git push --set-upstream origin `cb`
+}
+
+# checkout branch by grep
+function gco() {
+ command git checkout `git branch | grep $1`
+}
+
+export PATH=$PATH:~/govuk/govuk-docker/exe
+
+export PATH=$PATH:/usr/local/sbin
+export PATH=$PATH:/Users/peterhartshorn/govuk/govuk-guix/bin
+export EDITOR=vim
+#export LIBRARY_PATH=$LIBRARY_PATH:/usr/local/opt/openssl/lib/
+
+#export LDFLAGS="-L/usr/local/opt/openssl@1.1/lib"
+
+# Add go apps to path
+export PATH=$PATH:$(go env GOPATH)/bin
 
 # Path to the bash it configuration
 export BASH_IT="/Users/peterhartshorn/.bash_it"
@@ -16,6 +39,10 @@ export BASH_IT="/Users/peterhartshorn/.bash_it"
 # Lock and Load a custom theme file
 # location /.bash_it/themes/
 export BASH_IT_THEME='Sexy'
+
+# Add govuk-docker bin to PATH
+#export PATH=$PATH:~/govuk/govuk-docker-run/bin
+#export PATH=$PATH:~/govuk/govuk-docker/bin
 
 # (Advanced): Change this to the name of your remote repo if you
 # cloned bash-it with a remote other than origin such as `bash-it`.

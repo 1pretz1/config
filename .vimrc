@@ -40,6 +40,7 @@ endif
 " Store FZF history
 let g:fzf_history_dir = '~/.local/share/fzf-history'
 
+set shortmess-=S                  " report number of matches when searching / or ?
 set colorcolumn=81                " Draw a vertical bar after 80 characters
 set encoding=utf-8                " Use UTF-8 by default
 set expandtab                     " Use spaces instead of tabs
@@ -238,6 +239,12 @@ imap <silent> <C-w> <Nop>
 nnoremap <silent> + :exe "vertical resize +10"<CR>
 nnoremap <silent> _ :exe "vertical resize -10"<CR>
 
+" open quickfix in vim
+nnoremap <silent> co :copen<CR>
+
 " resize windows horizontally
 "nnoremap <silent> \| :exe "resize +5"<CR>
 "nnoremap <silent> " :exe "resize -5"<CR>
+
+" Dont copy text on visual paste
+xnoremap p pgvy

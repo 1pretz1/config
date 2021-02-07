@@ -7,18 +7,22 @@ eval "$(rbenv init -)"
 alias dev="ssh dev -t 'tmux -CC'"
 
 # print current branch
-function cb() {
+function gb() {
   command git rev-parse --abbrev-ref HEAD
 }
 
 # push current upstream branch
 function gpu() {
- command git push --set-upstream origin `cb`
+ command git push --set-upstream origin `gb`
 }
 
 # checkout branch by grep
 function gco() {
  command git checkout `git branch | grep $1`
+}
+
+function gr() {
+ command git checkout master && git pull && git checkout - && git rebase master
 }
 
 export PATH=$PATH:~/govuk/govuk-docker/exe

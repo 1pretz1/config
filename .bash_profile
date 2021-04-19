@@ -13,17 +13,34 @@ function gb() {
 
 # push current upstream branch
 function gpu() {
- command git push --set-upstream origin `gb`
+  command git push --set-upstream origin `gb`
 }
 
 # checkout branch by grep
 function gco() {
- command git checkout `git branch | grep $1`
+  command git checkout `git branch | grep $1`
 }
 
 function gr() {
- command git checkout master && git pull && git checkout - && git rebase master
+  command git checkout master && git pull && git checkout - && git rebase master
 }
+
+function gssh() {
+  if [[ "$1" == "-p" ]] || [[ "$1" == "--production" ]]; then
+    env=production
+  elif [[ "$1" == "-s" ]] || [[ "$1" == "--staging" ]]; then
+    env=staging
+  elif [[ "$1" == "-i" ]] || [[ "$1" == "--integration" ]]; then
+    env=integration
+  fi
+
+  ip=`ssh $env govuk_node_list -c $2 --single-node`
+  command ssh $ip.$env
+}
+
+if [ -f ~/.git-completion.bash ]; then
+  . ~/.git-completion.bash
+fi
 
 export PATH=$PATH:~/govuk/govuk-docker/exe
 

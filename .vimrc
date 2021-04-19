@@ -242,6 +242,9 @@ nnoremap <silent> _ :exe "vertical resize -10"<CR>
 " open quickfix in vim
 nnoremap <silent> co :copen<CR>
 
+" open Git blame
+nnoremap <silent> gb :Gblame<cr>
+
 " resize windows horizontally
 "nnoremap <silent> \| :exe "resize +5"<CR>
 "nnoremap <silent> " :exe "resize -5"<CR>
